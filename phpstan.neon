@@ -1,0 +1,12 @@
+includes:
+	- vendor/phpstan/phpstan-strict-rules/rules.neon
+	- vendor/shipmonk/phpstan-rules/rules.neon
+	- phpstan-baseline.neon
+
+parameters:
+	level: 10
+	paths:
+		- src
+	excludePaths:
+		- **/temp/**
+		- **/log/**
