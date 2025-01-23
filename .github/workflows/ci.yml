@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cs:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    name: Coding standard
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+
+      - name: Composer
+        uses: ramsey/composer-install@v2
+
+      - name: CS
+        run: make cs
+
+  PHPStan:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    name: PHPStan
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+
+      - name: Composer
+        uses: ramsey/composer-install@v2
+
+      - name: Analyze
+        run: make phpstan
+
+  unit:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    name: Unit testy
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+
+      - name: Composer
+        uses: ramsey/composer-install@v2
+
+      - name: Unit testy
+        run: make unit
+
+  composer-validate:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    name: Composer validate
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          clean: false
+          fetch-depth: 0
+
+      - uses: technote-space/get-diff-action@v6
+        with:
+          FILES: |
+            composer.json
+            composer.lock
+
+      - name: "Install PHP"
+        if: (env.GIT_DIFF && env.MATCHED_FILES)
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: '8.3'
+
+      - name: Composer validate
+        if: (env.GIT_DIFF && env.MATCHED_FILES)
+        run: |
+          composer validate
