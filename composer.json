@@ -25,7 +25,7 @@
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"AloisJasa\\SortedLinkedList\\": "tests/Unit"
+			"AloisJasa\\SortedLinkedList\\Tests\\": "tests/"
 		}
 	},
 	"config": {
